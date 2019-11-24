@@ -4,6 +4,7 @@ using LinearAlgebra, Statistics
 """
 - `b :: Vector in R^n`
 - `A :: A matrix in R^(nxn)
+- `x :: Initial guess at x`
 - `w :: Relaxation constant, must be > 0`
 - `method :: f for forward, b for backward, s for symmetric`
 - `iter :: Iterations, an integer`
@@ -15,10 +16,10 @@ function SOR(A :: Matrix, b :: Vector; w :: Float64 = 0.50, method :: Char = 'f'
     m == n || @error "A must be a square matrix"
     sum(broadcast(abs,diag(A)).>0) == n || @error "All diagonal entries must be non-zero"
     0 < w < 2 || @error "Relaxation constant w must be between 0 and 2"
-    uppercase(method) in ('F','B') || @error "Method must be either f for forward or b for backward"
+    uppercase(method) in ('F','B','S') || @error "Method must be either f for forward, b for backward, or s for symmetric"
 
     #If forwards, start at 1 if backwards, start at n
-    if uppercase(method) == 'F'
+    if uppercase(method) in ('F','S')
         start = 1; finish = n; steps = 1;
     else
         start = n; finish = 1; steps = -1;
@@ -36,6 +37,17 @@ function SOR(A :: Matrix, b :: Vector; w :: Float64 = 0.50, method :: Char = 'f'
                 end
             end
             x[i] = x[i] + w*(-x[i] + (b[i] - sigma)/A[i,i])
+            if uppercase(method) == 'S'
+                for i in finish:(-1*steps):start
+                    sigma = 0
+                    for j in 1:n
+                        if j != i
+                            sigma += A[i,j] * x[j]
+                        end
+                    end
+                    x[i] = x[i] + w*(-x[i] + (b[i] - sigma)/A[i,i])
+                end
+            end        
         end
         t += 1
     end
@@ -67,5 +79,13 @@ function SORExamples()
 
         printstyled("Error: ")
         printstyled("$(norm(x - x_sol))\n\n", color=:red)
+
+        printstyled("Solving the linear system using ")
+        printstyled("Symmetric Successive Over Relaxation\n", color=:blue)
+        x = SOR(A, b, method = 's')
+
+        printstyled("Error: ")
+        printstyled("$(norm(x - x_sol))\n\n", color=:red)
+
     end
 end
