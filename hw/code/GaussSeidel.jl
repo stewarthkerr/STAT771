@@ -4,10 +4,11 @@ using LinearAlgebra, Statistics
 """
 - `b :: Vector in R^n`
 - `A :: A matrix in R^(nxn)`
+- `x :: Initial guess at x`
 - `method :: f for forward, b for backward`
 - `iter :: Iterations, an integer`
 """
-function GaussSeidel(A :: Matrix, b :: Vector; method :: Char = 'b', iter :: Integer = 10, ϵ :: Float64 = 1e-14)
+function GaussSeidel(A :: Matrix, b :: Vector; x = 'f', method :: Char = 'b', iter :: Integer = 10, ϵ :: Float64 = 1e-14)
     #Error checking
     n, m = size(A)
     n == length(b) || @error "Dimension mismatch between coefficient matrix and constant vector"
@@ -22,10 +23,14 @@ function GaussSeidel(A :: Matrix, b :: Vector; method :: Char = 'b', iter :: Int
         start = n; finish = 1; steps = -1;
     end
 
-    #Start with vector of zeros as x
-    x = zeros(n)
+    #If guess given, guess all zeros
+    if x == 'f'
+        x = zeros(n)
+    elseif length(x) != n
+        @error "Initial guess at x must be same size as b"
+    end
     t = 0
-    while t <= iter
+    while t < iter
         for i in start:steps:finish
             x[i] = x[i] + (b[i] - (A*x)[i])/A[i,i]
         end

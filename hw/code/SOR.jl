@@ -9,7 +9,7 @@ using LinearAlgebra, Statistics
 - `method :: f for forward, b for backward, s for symmetric`
 - `iter :: Iterations, an integer`
 """
-function SOR(A :: Matrix, b :: Vector; w :: Float64 = 0.50, method :: Char = 'f', iter :: Integer = 50, ϵ :: Float64 = 1e-14)
+function SOR(A :: Matrix, b :: Vector; x = 'f', w :: Float64 = 0.50, method :: Char = 'f', iter :: Integer = 50, ϵ :: Float64 = 1e-14)
     #Error checking
     n, m = size(A)
     n == length(b) || @error "Dimension mismatch between coefficient matrix and constant vector"
@@ -26,9 +26,13 @@ function SOR(A :: Matrix, b :: Vector; w :: Float64 = 0.50, method :: Char = 'f'
     end
 
     #Start with vector of zeros as x
-    x = zeros(n)
+    if x == 'f'
+        x = zeros(n)
+    elseif length(x) != n
+        @error "Initial guess at x must be same size as b"
+    end
     t = 0
-    while t <= iter 
+    while t < iter 
         for i in start:steps:finish
             sigma = 0
             for j in 1:n
@@ -57,7 +61,7 @@ end
 
 
 function SORExamples()
-    dimens = [100, 500, 1000]
+    dimens = [100, 500]
 
     for dim in dimens
         printstyled("Generate a $dim x $dim system.\n",color=:yellow)

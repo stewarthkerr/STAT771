@@ -4,9 +4,10 @@ using LinearAlgebra, Statistics
 """
 - `b :: Vector in R^n`
 - `A :: A matrix in R^(nxn)`
+- `x :: Initial guess at x`
 - `iter :: Iterations, an integer`
 """
-function Jacobi(A :: Matrix, b :: Vector; iter :: Integer = 10, ϵ :: Float64 = 1e-14)
+function Jacobi(A :: Matrix, b :: Vector; x = 'f', iter :: Integer = 10, ϵ :: Float64 = 1e-14)
     #Error checking
     n, m = size(A)
     n == length(b) || @error "Dimension mismatch between coefficient matrix and constant vector"
@@ -14,9 +15,13 @@ function Jacobi(A :: Matrix, b :: Vector; iter :: Integer = 10, ϵ :: Float64 = 
     sum(broadcast(abs,diag(A)).>0) == n || @error "All diagonal entries must be non-zero"
 
     #Start with vector of zeros as x
-    x = zeros(n)
+    if x == 'f'
+        x = zeros(n)
+    elseif length(x) != n
+        @error "Initial guess at x must be same size as b"
+    end
     t = 0
-    while t <= iter
+    while t < iter
         for i = 1:n
             sigma = 0
             for j = 1:n
