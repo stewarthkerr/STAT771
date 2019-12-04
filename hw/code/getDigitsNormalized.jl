@@ -17,7 +17,7 @@
 
             #Calculate remainder for next iteration
             remainder = remainder % (float(base)^(exponent-i))
-            print(i,' ',remainder,' ')
+            print("Iteration: ", i,", Remainder: ",remainder,"\n")
         end
 
         return (dig_list, exponent)

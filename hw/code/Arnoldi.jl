@@ -13,7 +13,7 @@ function Arnoldi(A :: Matrix, v :: Vector; ϵ :: Float64 = 1e-14)
     m == n || @error "A is not a square matrix"
     m == length(v) || @error "Dimension mismatch between A and v"
 
-    h = zeros(n,n-1)
+    h = zeros(n,n)
     Q = fill(Float64[], n)
 
     #Initialize first vector

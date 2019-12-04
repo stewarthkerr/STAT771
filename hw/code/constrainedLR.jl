@@ -53,7 +53,7 @@ function constrainedLR(A :: Matrix, b :: Vector, C :: Matrix, d :: Vector ; ϵ :
 
     #https://stanford.edu/class/ee103/julia_slides/julia_least_squares_slides.pdf
     #kkt_sol = [2*A'*A C'; C zeros(p,p)] \ [2*A'*b; d]
-    #x2 = kkt_sol[1:m]
+    #x = kkt_sol[1:m]
 
     return x
 end

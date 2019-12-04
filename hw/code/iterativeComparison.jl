@@ -1,5 +1,5 @@
 ### Question 31
-using LinearAlgebra, Statistics
+using LinearAlgebra, Statistics, UnicodePlots
 include("SOR.jl")
 include("GaussSeidel.jl")
 include("Jacobi.jl")
@@ -7,7 +7,7 @@ include("Jacobi.jl")
 """
 Function to compare convergence of different iterative splitting methods (Jacobi, GaussSeidel, SOR, SSOR)
 """
-function iterativeComparison(; maxiter :: Integer = 50, ϵ :: Float64 = 1e-14, dim :: Integer = 100)
+function iterativeComparison(; maxiter :: Integer = 15, ϵ :: Float64 = 1e-14, dim :: Integer = 100)
     #Generate matrix to hold results
     results = fill(Float64[], 4, maxiter)
     residual_norm = zeros(4,maxiter)
@@ -18,6 +18,7 @@ function iterativeComparison(; maxiter :: Integer = 50, ϵ :: Float64 = 1e-14, d
     printstyled("Generate a $dim x $dim system.\n",color=:yellow)
     T = randn(dim,dim)
     A = T + I.*maximum(sum(abs.(T),dims=2))
+    #A = T+ I.*11
     x_sol = randn(dim)
     b = A*x_sol       
     x_guess = zeros(dim)
@@ -27,7 +28,7 @@ function iterativeComparison(; maxiter :: Integer = 50, ϵ :: Float64 = 1e-14, d
     residual_norm0 = norm(x_sol-x_guess)
     abs_error0 = sum(abs.(x_sol-x_guess))
     printstyled("Residual Norm: "); printstyled("$residual_norm0\n", color=:red)
-    printstyled("Aboslute Error: "); printstyled("$abs_error0\n", color=:red)
+    printstyled("Absolute Error: "); printstyled("$abs_error0\n", color=:red)
 
     #Perform first pass of each solver
     results[1,1] = Jacobi(A,b,iter = 1)
@@ -72,7 +73,16 @@ function iterativeComparison(; maxiter :: Integer = 50, ϵ :: Float64 = 1e-14, d
         i += 1
     end
 
-    return (spectral_radius, results, residual_norm, abs_error, iterations)
+    plot = lineplot(round.(abs_error[1,:], digits = 5),
+        title = "Comparison of Convergence of Iterative Solvers", 
+        name = "Jacobi",
+        xlabel = "Iteration",
+        ylabel = "Absolute Error")
+    lineplot!(plot, round.(abs_error[2,:], digits = 5), name = "Gauss Seidel")
+    lineplot!(plot, round.(abs_error[3,:], digits = 5), name = "SOR")
+    lineplot!(plot, round.(abs_error[4,:], digits = 5), name = "SSOR")
+
+    #return (spectral_radius, results, residual_norm, abs_error, iterations)
 end
 
 

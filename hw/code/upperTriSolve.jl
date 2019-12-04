@@ -10,7 +10,7 @@ function upperTriSolve(R,b)
     # Check for R not invertible
     n,m = size(R)
     n != m && @error "R is not a square matrix. Not invertible."
-    1e-14<minimum(diag(R)) || @error "R contains an (almost) 0 along the diagonal. Not invertible."
+    @assert( minimum(abs.(diag(R))) > 1e-8, "R contains an (almost) 0 along the diagonal. Not invertible.")
 
     # Check to make sure R,b are same size
     size(R,1) != size(b,1) && @error "R and b are not same size. Can't solve this system."
@@ -22,7 +22,7 @@ function upperTriSolve(R,b)
     x = zeros(m)
     for i = m:-1:1
         od = 0.0
-        for j = m:-1:(i+1)
+        for j = (i+1):m
             od += (R[i,j]*x[j])
         end
         x[i] = (b[i] - od)/R[i,i]
@@ -36,8 +36,8 @@ end
 """
 function upperTriSolveExample(n)
     #Generate random matrix and vector
-    R = UpperTriangular(rand(n,n))
-    x_real = rand(n)
+    R = UpperTriangular(randn(n,n))
+    x_real = randn(n)
     b = R*x_real
     x_sol = upperTriSolve(R,b)
 

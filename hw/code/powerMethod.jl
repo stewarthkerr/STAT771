@@ -36,7 +36,8 @@ function powerMethodExamples()
         printstyled(" Power Method\n", color=:cyan)
         y = powerMethod(A)
 
-        printstyled("Compare to Julia's internal eigenvalue solver")
+        #printstyled("Compare to Julia's internal eigenvalue solver")
+        #printstyled("Mines: $(y[1]), Julia's $(max(abs.(eigvals(A)))) \n")
     end
     nothing
 end

@@ -29,8 +29,8 @@ function underLR(A :: Matrix, b :: Vector; ϵ :: Float64 = 1e-14)
     c2 = d[r+1:n]
 
     #print norm of c2 -- error
-    printstyled("Norm of the c2 error: ")
-    printstyled("$(norm(c2))\n", color=:red)
+    #printstyled("Norm of the c2 error: ")
+    #printstyled("$(norm(c2))\n", color=:red)
 
     #Need to solve Rz1 + Sz2 - c1 = 0 --> Rz1 = c1 - Sz2
 

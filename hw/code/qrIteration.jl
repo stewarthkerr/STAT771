@@ -1,5 +1,6 @@
 ### Added Question 10
-using LinearAlgebra, Statistics, SparseArrays
+### Look at qr_iteration.jl code
+using LinearAlgebra, Statistics, SparseArrays, UnicodePlots
 include("qrHouseholder.jl")
 
 """
@@ -14,37 +15,36 @@ function qrIteration(A :: Matrix; iter :: Integer = 500)
 
     QR = qrHouseholder(A)
     gamma = QR.Q'*A*QR.Q
+    data = zeros(Float64, iter)
+
 
     for i=1:iter
         QR = qrHouseholder(gamma)
         gamma = QR.R*QR.Q
+        data[i] = sum(abs.(gamma)) - sum(abs.(diag(gamma)))
+
     end
 
-    return gamma
+    return gamma, data
 end
 
 
 function qrIterationExamples()
-    dims = [10, 25, 50]
-    ϵ = 1e-14
+    dims = [10, 50]
     for dim in dims
-        printstyled("\nGenerate a $dim-dimensional square matrix.\n", color=:yellow)
+        printstyled("\nGenerate a $dim-dimensional symmetric matrix.\n",color=:yellow)
         A = randn(dim,dim)
+        A = (A'+A)
 
-        printstyled("Estimate eigenvalues", color=:yellow)
-        printstyled(" QR Iteration\n", color=:cyan)
-        y = sort(diag(qrIteration(A)), rev=true)
+        printstyled("Computing eigenvalues with ")
+        printstyled("QR Iteration\n", color=:cyan)
+        gamma, data = qrIteration(A, iter=dim*60)
 
-        printstyled("Compare to Julia's internal eigenvalue solver (eigvals)\n", color=:yellow)
-        y_sol = eigvals(A)
+        printstyled("Plot of off-diagonal element sums: \n")
+        println(scatterplot(log.(10,data)))
 
-        printstyled("Sum of Eigenvalues from qrIteration: ", color=:cyan)
-        printstyled("$(sum(y))\n")
-        printstyled("Sum of Eigenvalues from eigvals: ", color=:cyan)
-        printstyled("$(sum(y_sol))\n")
-        #printstyled("Sum of Aboslute Difference between methods: ", color=:cyan)
-        #printstyled("$(sum(abs.(y-y_sol)))")
-
+        printstyled("\nError between QR Iteration and Julia's Solver: ")
+        printstyled("$(norm(sort(diag(gamma)) - sort(eigvals(A))))\n", color=:green)
     end
     nothing
 end

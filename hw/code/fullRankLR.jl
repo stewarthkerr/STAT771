@@ -45,10 +45,10 @@ function fullRankLRExamples()
         printstyled("fullRankLR\n", color=:cyan)
         y = fullRankLR(A, b)
 
-        printstyled("Inverse Error: ")
+        printstyled("Julia Inverse Error: ")
         printstyled("$(norm(x_sol-y[1]))\n", color=:red)
 
-        printstyled("Backsub Error: ")
+        printstyled("upperTriSolve Backsub Error: ")
         printstyled("$(norm(x_sol-y[2]))\n", color=:red)
     end
     nothing

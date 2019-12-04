@@ -1,6 +1,7 @@
 ### Question 20
 ### https://core.ac.uk/download/pdf/82066579.pdf
 using LinearAlgebra, Statistics
+include("mgs.jl")
 
 #Define QR object
 struct QRPI
@@ -94,15 +95,30 @@ function mgscpExamples()
         printstyled("$(error)", color=:red)
     end
 
+    printstyled("\n \n \n Example where MGS fails but MGS with pivoting works\n", color=:green)
+
     A = randn(100,20)
     A[:,5] = A[:,1]
     A[1,5] = A[1,5] + 1e-15
     printstyled("\nGenerate a (nearly) rank-deficient matrix.\n", color=:yellow)
     printstyled("\nNumber of columns of A = 20, Rank(A) = $(rank(A))\n", color=:yellow)
 
+    printstyled("Compute QR factorization using", color=:yellow)
+    printstyled(" Modified Gram-Schmidt WITHOUT Column Pivoting\n", color=:cyan)
+    y = mgs(A)
+
+    printstyled("Recover A from Q,R \n", color=:yellow)
+    AR = y.Q*y.R
+
+    printstyled("Compare original and recovered A\n", color=:yellow)
+    error = sum((A-AR).^2)
+    printstyled(" sum((A - AR) .<= 1e-14) = $(error .<= ϵ)\n", color=:cyan)
+
+    printstyled("Total error from QR factorization\n", color=:yellow)
+    printstyled("$(error) \n", color=:red)
 
     printstyled("Compute QR factorization using", color=:yellow)
-    printstyled(" Modified Gram-Schmidt with Column Pivoting\n", color=:cyan)
+    printstyled(" Modified Gram-Schmidt WITH Column Pivoting\n", color=:cyan)
     y = mgs_cp(A)
 
     printstyled("Recover A from Q,R \n", color=:yellow)
